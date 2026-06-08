@@ -105,6 +105,7 @@ class MainActivity : ComponentActivity() {
 
                         Routes.EMERGENCY -> {
                             EmergencyScreen(
+                                donors = donors,
                                 onBackClick = {
                                     currentScreen = Routes.HOME
                                 }
