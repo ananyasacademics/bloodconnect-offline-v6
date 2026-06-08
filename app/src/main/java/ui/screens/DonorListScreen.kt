@@ -7,16 +7,20 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Button
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.material3.Card
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.ananyasacademics.bloodconnect.data.model.Donor
 
 @Composable
 fun DonorListScreen(
+    donors: List<Donor>,
     onBackClick: () -> Unit
 ) {
     Column(
@@ -33,25 +37,66 @@ fun DonorListScreen(
         Spacer(modifier = Modifier.height(8.dp))
 
         Text(
-            text = "Saved donor records will appear here after database connection.",
+            text = "Saved local donor records.",
             style = MaterialTheme.typography.bodyMedium
         )
 
         Spacer(modifier = Modifier.height(24.dp))
 
-        Button(
-            onClick = {},
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            Text("Search Donors")
+        if (donors.isEmpty()) {
+            Text(
+                text = "No donors saved yet.",
+                style = MaterialTheme.typography.bodyLarge
+            )
+        } else {
+            LazyColumn(
+                modifier = Modifier.weight(1f)
+            ) {
+                items(donors) { donor ->
+                    Card(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(bottom = 12.dp)
+                    ) {
+                        Column(
+                            modifier = Modifier.padding(16.dp)
+                        ) {
+                            Text(
+                                text = donor.name,
+                                style = MaterialTheme.typography.titleMedium
+                            )
+
+                            Text(
+                                text = "Blood Group: ${donor.bloodGroup}",
+                                style = MaterialTheme.typography.bodyMedium
+                            )
+
+                            Text(
+                                text = "Phone: ${donor.phone}",
+                                style = MaterialTheme.typography.bodyMedium
+                            )
+
+                            Text(
+                                text = "Area: ${donor.area}",
+                                style = MaterialTheme.typography.bodyMedium
+                            )
+
+                            Text(
+                                text = "Status: ${donor.availabilityStatus}",
+                                style = MaterialTheme.typography.bodyMedium
+                            )
+
+                            if (donor.notes.isNotBlank()) {
+                                Text(
+                                    text = "Notes: ${donor.notes}",
+                                    style = MaterialTheme.typography.bodyMedium
+                                )
+                            }
+                        }
+                    }
+                }
+            }
         }
-
-        Spacer(modifier = Modifier.height(12.dp))
-
-        Text(
-            text = "No donors loaded yet.",
-            style = MaterialTheme.typography.bodyLarge
-        )
 
         Spacer(modifier = Modifier.height(24.dp))
 
