@@ -8,17 +8,11 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
-import androidx.compose.material3.DropdownMenu
-import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.Card
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 
@@ -26,56 +20,37 @@ import androidx.compose.ui.unit.dp
 fun EmergencyScreen(
     onBackClick: () -> Unit
 ) {
-    var requestedBloodGroup by remember { mutableStateOf("O+") }
-    var expanded by remember { mutableStateOf(false) }
-
-    val bloodGroups = listOf("O+", "O-", "A+", "A-", "B+", "B-", "AB+", "AB-")
-
     Column(
         modifier = Modifier
             .fillMaxSize()
             .padding(24.dp),
         verticalArrangement = Arrangement.Top
     ) {
+
         Text(
-            text = "Emergency Mode",
+            text = "Emergency Blood Request",
             style = MaterialTheme.typography.headlineMedium
         )
 
-        Spacer(modifier = Modifier.height(8.dp))
+        Spacer(modifier = Modifier.height(16.dp))
 
-        Text(
-            text = "Quickly find exact and compatible donors during urgent situations.",
-            style = MaterialTheme.typography.bodyMedium
-        )
-
-        Spacer(modifier = Modifier.height(24.dp))
-
-        Text(
-            text = "Needed Blood Group",
-            style = MaterialTheme.typography.bodyMedium
-        )
-
-        Spacer(modifier = Modifier.height(8.dp))
-
-        OutlinedButton(
-            onClick = { expanded = true },
+        Card(
             modifier = Modifier.fillMaxWidth()
         ) {
-            Text(requestedBloodGroup)
-        }
+            Column(
+                modifier = Modifier.padding(16.dp)
+            ) {
 
-        DropdownMenu(
-            expanded = expanded,
-            onDismissRequest = { expanded = false }
-        ) {
-            bloodGroups.forEach { group ->
-                DropdownMenuItem(
-                    text = { Text(group) },
-                    onClick = {
-                        requestedBloodGroup = group
-                        expanded = false
-                    }
+                Text(
+                    text = "Offline Emergency Matching",
+                    style = MaterialTheme.typography.titleMedium
+                )
+
+                Spacer(modifier = Modifier.height(8.dp))
+
+                Text(
+                    text = "Find local donor matches even without internet access.",
+                    style = MaterialTheme.typography.bodyMedium
                 )
             }
         }
@@ -83,18 +58,11 @@ fun EmergencyScreen(
         Spacer(modifier = Modifier.height(24.dp))
 
         Button(
-            onClick = {},
+            onClick = { },
             modifier = Modifier.fillMaxWidth()
         ) {
-            Text("Find Donors")
+            Text("Find Matching Donors")
         }
-
-        Spacer(modifier = Modifier.height(24.dp))
-
-        Text(
-            text = "Exact matches and compatible fallback donors will appear here after database connection.",
-            style = MaterialTheme.typography.bodyLarge
-        )
 
         Spacer(modifier = Modifier.height(24.dp))
 
