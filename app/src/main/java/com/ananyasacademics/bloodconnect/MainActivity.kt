@@ -11,6 +11,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.graphics.Color
 import com.ananyasacademics.bloodconnect.ui.navigation.Routes
 import com.ananyasacademics.bloodconnect.ui.screens.AddDonorScreen
+import com.ananyasacademics.bloodconnect.ui.screens.DashboardScreen
 import com.ananyasacademics.bloodconnect.ui.screens.DonorListScreen
 import com.ananyasacademics.bloodconnect.ui.screens.EmergencyScreen
 import com.ananyasacademics.bloodconnect.ui.screens.HomeScreen
@@ -28,6 +29,7 @@ class MainActivity : ComponentActivity() {
                     var currentScreen by remember { mutableStateOf(Routes.HOME) }
 
                     when (currentScreen) {
+
                         Routes.HOME -> {
                             HomeScreen(
                                 onAddDonorClick = {
@@ -39,14 +41,16 @@ class MainActivity : ComponentActivity() {
                                 onEmergencyClick = {
                                     currentScreen = Routes.EMERGENCY
                                 },
-                                onDashboardClick = {},
+                                onDashboardClick = {
+                                    currentScreen = Routes.DASHBOARD
+                                },
                                 onPrivacyClick = {}
                             )
                         }
 
                         Routes.ADD_DONOR -> {
                             AddDonorScreen(
-                                onSaveClick = { name, bloodGroup, phone, area, available, notes ->
+                                onSaveClick = { _, _, _, _, _, _ ->
                                     currentScreen = Routes.HOME
                                 },
                                 onBackClick = {
@@ -65,6 +69,14 @@ class MainActivity : ComponentActivity() {
 
                         Routes.EMERGENCY -> {
                             EmergencyScreen(
+                                onBackClick = {
+                                    currentScreen = Routes.HOME
+                                }
+                            )
+                        }
+
+                        Routes.DASHBOARD -> {
+                            DashboardScreen(
                                 onBackClick = {
                                     currentScreen = Routes.HOME
                                 }
