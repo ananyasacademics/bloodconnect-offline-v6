@@ -17,6 +17,7 @@ import androidx.compose.ui.unit.dp
 
 @Composable
 fun DashboardScreen(
+    donorCount: Int,
     onBackClick: () -> Unit
 ) {
     Column(
@@ -30,66 +31,24 @@ fun DashboardScreen(
             style = MaterialTheme.typography.headlineMedium
         )
 
-        Spacer(modifier = Modifier.height(8.dp))
-
-        Text(
-            text = "Preparedness visibility and donor coverage summary.",
-            style = MaterialTheme.typography.bodyMedium
-        )
-
         Spacer(modifier = Modifier.height(24.dp))
 
         Card(
             modifier = Modifier.fillMaxWidth()
         ) {
             Column(
-                modifier = Modifier.padding(16.dp)
+                modifier = Modifier.padding(20.dp)
             ) {
                 Text(
-                    text = "Total Donors",
+                    text = "Registered Donors",
                     style = MaterialTheme.typography.titleMedium
                 )
-                Text(
-                    text = "0",
-                    style = MaterialTheme.typography.headlineMedium
-                )
-            }
-        }
 
-        Spacer(modifier = Modifier.height(16.dp))
+                Spacer(modifier = Modifier.height(8.dp))
 
-        Card(
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            Column(
-                modifier = Modifier.padding(16.dp)
-            ) {
                 Text(
-                    text = "Available Donors",
-                    style = MaterialTheme.typography.titleMedium
-                )
-                Text(
-                    text = "0",
-                    style = MaterialTheme.typography.headlineMedium
-                )
-            }
-        }
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        Card(
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            Column(
-                modifier = Modifier.padding(16.dp)
-            ) {
-                Text(
-                    text = "Coverage",
-                    style = MaterialTheme.typography.titleMedium
-                )
-                Text(
-                    text = "Database connection pending",
-                    style = MaterialTheme.typography.bodyMedium
+                    text = donorCount.toString(),
+                    style = MaterialTheme.typography.headlineLarge
                 )
             }
         }

@@ -113,6 +113,7 @@ class MainActivity : ComponentActivity() {
 
                         Routes.DASHBOARD -> {
                             DashboardScreen(
+                                donorCount = donors.size,
                                 onBackClick = {
                                     currentScreen = Routes.HOME
                                 }
