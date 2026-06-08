@@ -15,6 +15,7 @@ import com.ananyasacademics.bloodconnect.ui.screens.DashboardScreen
 import com.ananyasacademics.bloodconnect.ui.screens.DonorListScreen
 import com.ananyasacademics.bloodconnect.ui.screens.EmergencyScreen
 import com.ananyasacademics.bloodconnect.ui.screens.HomeScreen
+import com.ananyasacademics.bloodconnect.ui.screens.PrivacyScreen
 import com.ananyasacademics.bloodconnect.ui.theme.BloodConnectOfflineV6Theme
 
 class MainActivity : ComponentActivity() {
@@ -44,7 +45,9 @@ class MainActivity : ComponentActivity() {
                                 onDashboardClick = {
                                     currentScreen = Routes.DASHBOARD
                                 },
-                                onPrivacyClick = {}
+                                onPrivacyClick = {
+                                    currentScreen = Routes.PRIVACY
+                                }
                             )
                         }
 
@@ -77,6 +80,14 @@ class MainActivity : ComponentActivity() {
 
                         Routes.DASHBOARD -> {
                             DashboardScreen(
+                                onBackClick = {
+                                    currentScreen = Routes.HOME
+                                }
+                            )
+                        }
+
+                        Routes.PRIVACY -> {
+                            PrivacyScreen(
                                 onBackClick = {
                                     currentScreen = Routes.HOME
                                 }
