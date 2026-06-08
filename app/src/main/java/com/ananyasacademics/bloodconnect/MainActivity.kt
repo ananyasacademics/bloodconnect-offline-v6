@@ -12,6 +12,7 @@ import androidx.compose.ui.graphics.Color
 import com.ananyasacademics.bloodconnect.ui.navigation.Routes
 import com.ananyasacademics.bloodconnect.ui.screens.AddDonorScreen
 import com.ananyasacademics.bloodconnect.ui.screens.DonorListScreen
+import com.ananyasacademics.bloodconnect.ui.screens.EmergencyScreen
 import com.ananyasacademics.bloodconnect.ui.screens.HomeScreen
 import com.ananyasacademics.bloodconnect.ui.theme.BloodConnectOfflineV6Theme
 
@@ -35,7 +36,9 @@ class MainActivity : ComponentActivity() {
                                 onDonorListClick = {
                                     currentScreen = Routes.DONOR_LIST
                                 },
-                                onEmergencyClick = {},
+                                onEmergencyClick = {
+                                    currentScreen = Routes.EMERGENCY
+                                },
                                 onDashboardClick = {},
                                 onPrivacyClick = {}
                             )
@@ -54,6 +57,14 @@ class MainActivity : ComponentActivity() {
 
                         Routes.DONOR_LIST -> {
                             DonorListScreen(
+                                onBackClick = {
+                                    currentScreen = Routes.HOME
+                                }
+                            )
+                        }
+
+                        Routes.EMERGENCY -> {
+                            EmergencyScreen(
                                 onBackClick = {
                                     currentScreen = Routes.HOME
                                 }
