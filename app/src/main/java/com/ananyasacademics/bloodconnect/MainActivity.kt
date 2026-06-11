@@ -16,6 +16,7 @@ import com.ananyasacademics.bloodconnect.data.model.Donor
 import com.ananyasacademics.bloodconnect.data.repository.DonorRepository
 import com.ananyasacademics.bloodconnect.ui.navigation.Routes
 import com.ananyasacademics.bloodconnect.ui.screens.AddDonorScreen
+import com.ananyasacademics.bloodconnect.ui.screens.CsvToolsScreen
 import com.ananyasacademics.bloodconnect.ui.screens.DashboardScreen
 import com.ananyasacademics.bloodconnect.ui.screens.DonorListScreen
 import com.ananyasacademics.bloodconnect.ui.screens.EmergencyScreen
@@ -50,11 +51,21 @@ class MainActivity : ComponentActivity() {
                         mutableStateOf(Routes.HOME)
                     }
 
+                    var addDonorMessage by remember {
+                        mutableStateOf("")
+                    }
+
+                    var showAddDonorDialog by remember {
+                        mutableStateOf(false)
+                    }
+
                     when (currentScreen) {
 
                         Routes.HOME -> {
                             HomeScreen(
                                 onAddDonorClick = {
+                                    addDonorMessage = ""
+                                    showAddDonorDialog = false
                                     currentScreen = Routes.ADD_DONOR
                                 },
                                 onDonorListClick = {
@@ -66,6 +77,9 @@ class MainActivity : ComponentActivity() {
                                 onDashboardClick = {
                                     currentScreen = Routes.DASHBOARD
                                 },
+                                onCsvToolsClick = {
+                                    currentScreen = Routes.CSV_TOOLS
+                                },
                                 onPrivacyClick = {
                                     currentScreen = Routes.PRIVACY
                                 }
@@ -74,19 +88,58 @@ class MainActivity : ComponentActivity() {
 
                         Routes.ADD_DONOR -> {
                             AddDonorScreen(
+                                message = addDonorMessage,
+                                showMessageDialog = showAddDonorDialog,
+                                onDismissMessage = {
+                                    showAddDonorDialog = false
+                                },
                                 onSaveClick = { name, bloodGroup, phone, area, available, notes ->
-                                    donorViewModel.addDonor(
-                                        Donor(
-                                            name = name,
-                                            bloodGroup = bloodGroup,
-                                            phone = phone,
-                                            area = area,
-                                            availabilityStatus = if (available) "Available" else "Unavailable",
-                                            notes = notes
-                                        )
-                                    )
+                                    val cleanPhone = phone.filter { char -> char.isDigit() }
+                                    val cleanName = name.trim().lowercase()
+                                    val cleanArea = area.trim().lowercase()
+                                    val cleanBloodGroup = bloodGroup.trim().uppercase()
 
-                                    currentScreen = Routes.HOME
+                                    val duplicatePhone = donors.any {
+                                        it.phone.filter { char -> char.isDigit() } == cleanPhone
+                                    }
+
+                                    val duplicateNameAreaBloodGroup = donors.any {
+                                        it.name.trim().lowercase() == cleanName &&
+                                                it.area.trim().lowercase() == cleanArea &&
+                                                it.bloodGroup.trim().uppercase() == cleanBloodGroup
+                                    }
+
+                                    when {
+                                        duplicatePhone -> {
+                                            addDonorMessage =
+                                                "A donor with this phone number already exists. Please check the donor list before adding again."
+                                            showAddDonorDialog = true
+                                        }
+
+                                        duplicateNameAreaBloodGroup -> {
+                                            addDonorMessage =
+                                                "A similar donor already exists with the same name, area, and blood group."
+                                            showAddDonorDialog = true
+                                        }
+
+                                        else -> {
+                                            donorViewModel.addDonor(
+                                                Donor(
+                                                    name = name,
+                                                    bloodGroup = bloodGroup,
+                                                    phone = phone,
+                                                    area = area,
+                                                    availabilityStatus = if (available) "Available" else "Unavailable",
+                                                    notes = notes,
+                                                    updatedTimestamp = System.currentTimeMillis()
+                                                )
+                                            )
+
+                                            addDonorMessage = ""
+                                            showAddDonorDialog = false
+                                            currentScreen = Routes.HOME
+                                        }
+                                    }
                                 },
                                 onBackClick = {
                                     currentScreen = Routes.HOME
@@ -114,7 +167,21 @@ class MainActivity : ComponentActivity() {
 
                         Routes.DASHBOARD -> {
                             DashboardScreen(
-                                donorCount = donors.size,
+                                donors = donors,
+                                onBackClick = {
+                                    currentScreen = Routes.HOME
+                                }
+                            )
+                        }
+
+                        Routes.CSV_TOOLS -> {
+                            CsvToolsScreen(
+                                donors = donors,
+                                onImportDonors = { importedDonors ->
+                                    importedDonors.forEach { donor ->
+                                        donorViewModel.addDonor(donor)
+                                    }
+                                },
                                 onBackClick = {
                                     currentScreen = Routes.HOME
                                 }

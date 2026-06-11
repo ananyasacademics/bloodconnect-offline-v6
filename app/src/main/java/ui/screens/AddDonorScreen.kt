@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -30,6 +31,9 @@ import androidx.compose.ui.unit.dp
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AddDonorScreen(
+    message: String = "",
+    showMessageDialog: Boolean = false,
+    onDismissMessage: () -> Unit = {},
     onSaveClick: (
         name: String,
         bloodGroup: String,
@@ -47,9 +51,34 @@ fun AddDonorScreen(
     var available by remember { mutableStateOf(true) }
     var notes by remember { mutableStateOf("") }
 
+    var errorMessage by remember { mutableStateOf("") }
     var bloodGroupExpanded by remember { mutableStateOf(false) }
 
     val bloodGroups = listOf("O+", "O-", "A+", "A-", "B+", "B-", "AB+", "AB-")
+
+    fun isPhoneValid(value: String): Boolean {
+        val cleaned = value.filter { it.isDigit() }
+        return cleaned.length in 7..15
+    }
+
+    if (showMessageDialog && message.isNotBlank()) {
+        AlertDialog(
+            onDismissRequest = onDismissMessage,
+            title = {
+                Text("Donor Not Saved")
+            },
+            text = {
+                Text(message)
+            },
+            confirmButton = {
+                TextButton(
+                    onClick = onDismissMessage
+                ) {
+                    Text("OK")
+                }
+            }
+        )
+    }
 
     Column(
         modifier = Modifier
@@ -66,7 +95,7 @@ fun AddDonorScreen(
         Spacer(modifier = Modifier.height(8.dp))
 
         Text(
-            text = "Add local donor details for offline emergency coordination.",
+            text = "Add local donor details for offline emergency coordination. Data stays on this device.",
             style = MaterialTheme.typography.bodyMedium
         )
 
@@ -74,10 +103,14 @@ fun AddDonorScreen(
 
         OutlinedTextField(
             value = name,
-            onValueChange = { name = it },
+            onValueChange = {
+                name = it
+                errorMessage = ""
+            },
             label = { Text("Donor Name") },
             modifier = Modifier.fillMaxWidth(),
-            singleLine = true
+            singleLine = true,
+            isError = errorMessage.contains("name", ignoreCase = true)
         )
 
         Spacer(modifier = Modifier.height(16.dp))
@@ -109,6 +142,7 @@ fun AddDonorScreen(
                         onClick = {
                             bloodGroup = group
                             bloodGroupExpanded = false
+                            errorMessage = ""
                         }
                     )
                 }
@@ -119,20 +153,28 @@ fun AddDonorScreen(
 
         OutlinedTextField(
             value = phone,
-            onValueChange = { phone = it },
+            onValueChange = {
+                phone = it
+                errorMessage = ""
+            },
             label = { Text("Phone Number") },
             modifier = Modifier.fillMaxWidth(),
-            singleLine = true
+            singleLine = true,
+            isError = errorMessage.contains("phone", ignoreCase = true)
         )
 
         Spacer(modifier = Modifier.height(16.dp))
 
         OutlinedTextField(
             value = area,
-            onValueChange = { area = it },
+            onValueChange = {
+                area = it
+                errorMessage = ""
+            },
             label = { Text("Area / Location") },
             modifier = Modifier.fillMaxWidth(),
-            singleLine = true
+            singleLine = true,
+            isError = errorMessage.contains("area", ignoreCase = true)
         )
 
         Spacer(modifier = Modifier.height(16.dp))
@@ -151,24 +193,74 @@ fun AddDonorScreen(
 
         OutlinedTextField(
             value = notes,
-            onValueChange = { notes = it },
+            onValueChange = {
+                notes = it
+                errorMessage = ""
+            },
             label = { Text("Notes") },
             modifier = Modifier.fillMaxWidth(),
             minLines = 3
         )
 
+        if (errorMessage.isNotBlank()) {
+            Spacer(modifier = Modifier.height(12.dp))
+            Text(
+                text = errorMessage,
+                color = MaterialTheme.colorScheme.error,
+                style = MaterialTheme.typography.bodyMedium
+            )
+        }
+
         Spacer(modifier = Modifier.height(24.dp))
 
         Button(
             onClick = {
-                onSaveClick(
-                    name.trim(),
-                    bloodGroup,
-                    phone.trim(),
-                    area.trim(),
-                    available,
-                    notes.trim()
-                )
+                val cleanName = name.trim()
+                val cleanPhone = phone.trim()
+                val cleanArea = area.trim()
+                val cleanNotes = notes.trim()
+
+                errorMessage = when {
+                    cleanName.isBlank() ->
+                        "Please enter the donor name."
+
+                    cleanName.length < 2 ->
+                        "Please enter a valid donor name."
+
+                    cleanName.length > 60 ->
+                        "Donor name is too long. Please keep it under 60 characters."
+
+                    bloodGroup !in bloodGroups ->
+                        "Please select a valid blood group."
+
+                    cleanPhone.isBlank() ->
+                        "Please enter a phone number."
+
+                    !isPhoneValid(cleanPhone) ->
+                        "Please enter a valid phone number with 7 to 15 digits."
+
+                    cleanArea.isBlank() ->
+                        "Please enter an area or location."
+
+                    cleanArea.length > 80 ->
+                        "Area is too long. Please keep it under 80 characters."
+
+                    cleanNotes.length > 300 ->
+                        "Notes are too long. Please keep notes under 300 characters."
+
+                    else -> ""
+                }
+
+                if (errorMessage.isBlank()) {
+                    onSaveClick(
+                        cleanName,
+                        bloodGroup,
+                        cleanPhone,
+                        cleanArea,
+                        available,
+                        cleanNotes
+                    )
+                }
             },
             modifier = Modifier.fillMaxWidth()
         ) {

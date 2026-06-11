@@ -1,5 +1,3 @@
-
-
 package com.ananyasacademics.bloodconnect.ui.screens
 
 import androidx.compose.foundation.layout.*
@@ -16,6 +14,7 @@ fun HomeScreen(
     onDonorListClick: () -> Unit,
     onEmergencyClick: () -> Unit,
     onDashboardClick: () -> Unit,
+    onCsvToolsClick: () -> Unit,
     onPrivacyClick: () -> Unit
 ) {
     Column(
@@ -72,6 +71,15 @@ fun HomeScreen(
                 modifier = Modifier.fillMaxWidth()
             ) {
                 Text("Dashboard")
+            }
+
+            Spacer(modifier = Modifier.height(12.dp))
+
+            OutlinedButton(
+                onClick = onCsvToolsClick,
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Text("Data Tools")
             }
 
             Spacer(modifier = Modifier.height(12.dp))
