@@ -1,0 +1,13 @@
+<resources>
+    <string name="app_name">BloodConnect Offline</string>
+
+    <string name="home_title">BloodConnect Offline</string>
+    <string name="home_subtitle">Coordinación de donantes de emergencia sin conexión.</string>
+    <string name="emergency_mode">Modo de Emergencia</string>
+    <string name="add_donor">Agregar Donante</string>
+    <string name="donor_list">Lista de Donantes</string>
+    <string name="dashboard">Panel</string>
+    <string name="data_tools">Herramientas de Datos</string>
+    <string name="privacy_info">Privacidad e Información</string>
+    <string name="local_only">Almacenamiento local • No requiere nube</string>
+</resources>

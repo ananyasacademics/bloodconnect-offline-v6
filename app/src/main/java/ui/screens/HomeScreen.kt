@@ -5,8 +5,10 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import com.ananyasacademics.bloodconnect.R
 
 @Composable
 fun HomeScreen(
@@ -25,7 +27,7 @@ fun HomeScreen(
     ) {
         Column {
             Text(
-                text = "BloodConnect Offline",
+                text = stringResource(R.string.home_title),
                 style = MaterialTheme.typography.headlineMedium,
                 fontWeight = FontWeight.Bold
             )
@@ -33,7 +35,7 @@ fun HomeScreen(
             Spacer(modifier = Modifier.height(8.dp))
 
             Text(
-                text = "Offline-first emergency donor coordination.",
+                text = stringResource(R.string.home_subtitle),
                 style = MaterialTheme.typography.bodyLarge
             )
 
@@ -43,7 +45,7 @@ fun HomeScreen(
                 onClick = onEmergencyClick,
                 modifier = Modifier.fillMaxWidth()
             ) {
-                Text("Emergency Mode")
+                Text(stringResource(R.string.emergency_mode))
             }
 
             Spacer(modifier = Modifier.height(12.dp))
@@ -52,7 +54,7 @@ fun HomeScreen(
                 onClick = onAddDonorClick,
                 modifier = Modifier.fillMaxWidth()
             ) {
-                Text("Add Donor")
+                Text(stringResource(R.string.add_donor))
             }
 
             Spacer(modifier = Modifier.height(12.dp))
@@ -61,7 +63,7 @@ fun HomeScreen(
                 onClick = onDonorListClick,
                 modifier = Modifier.fillMaxWidth()
             ) {
-                Text("Donor List")
+                Text(stringResource(R.string.donor_list))
             }
 
             Spacer(modifier = Modifier.height(12.dp))
@@ -70,7 +72,7 @@ fun HomeScreen(
                 onClick = onDashboardClick,
                 modifier = Modifier.fillMaxWidth()
             ) {
-                Text("Dashboard")
+                Text(stringResource(R.string.dashboard))
             }
 
             Spacer(modifier = Modifier.height(12.dp))
@@ -79,7 +81,7 @@ fun HomeScreen(
                 onClick = onCsvToolsClick,
                 modifier = Modifier.fillMaxWidth()
             ) {
-                Text("Data Tools")
+                Text(stringResource(R.string.data_tools))
             }
 
             Spacer(modifier = Modifier.height(12.dp))
@@ -88,12 +90,12 @@ fun HomeScreen(
                 onClick = onPrivacyClick,
                 modifier = Modifier.fillMaxWidth()
             ) {
-                Text("Privacy & Info")
+                Text(stringResource(R.string.privacy_info))
             }
         }
 
         Text(
-            text = "Local-only storage • No cloud required",
+            text = stringResource(R.string.local_only),
             style = MaterialTheme.typography.bodySmall,
             modifier = Modifier.align(Alignment.CenterHorizontally)
         )

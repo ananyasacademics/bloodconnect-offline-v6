@@ -1,3 +1,13 @@
 <resources>
-    <string name="app_name">BloodConnectOfflineV6</string>
+    <string name="app_name">BloodConnect Offline</string>
+
+    <string name="home_title">BloodConnect Offline</string>
+    <string name="home_subtitle">Offline-first emergency donor coordination.</string>
+    <string name="emergency_mode">Emergency Mode</string>
+    <string name="add_donor">Add Donor</string>
+    <string name="donor_list">Donor List</string>
+    <string name="dashboard">Dashboard</string>
+    <string name="data_tools">Data Tools</string>
+    <string name="privacy_info">Privacy &amp; Info</string>
+    <string name="local_only">Local-only storage • No cloud required</string>
 </resources>

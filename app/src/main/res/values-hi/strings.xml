@@ -1,0 +1,13 @@
+<resources>
+    <string name="app_name">BloodConnect Offline</string>
+
+    <string name="home_title">BloodConnect Offline</string>
+    <string name="home_subtitle">ऑफ़लाइन-प्रथम आपातकालीन दाता समन्वय।</string>
+    <string name="emergency_mode">आपातकालीन मोड</string>
+    <string name="add_donor">दाता जोड़ें</string>
+    <string name="donor_list">दाता सूची</string>
+    <string name="dashboard">डैशबोर्ड</string>
+    <string name="data_tools">डेटा टूल्स</string>
+    <string name="privacy_info">गोपनीयता और जानकारी</string>
+    <string name="local_only">केवल स्थानीय संग्रहण • क्लाउड आवश्यक नहीं</string>
+</resources>
