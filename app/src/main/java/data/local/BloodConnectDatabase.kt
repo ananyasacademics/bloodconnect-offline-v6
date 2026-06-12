@@ -1,4 +1,3 @@
-
 package com.ananyasacademics.bloodconnect.data.local
 
 import android.content.Context
@@ -9,7 +8,7 @@ import com.ananyasacademics.bloodconnect.data.model.Donor
 
 @Database(
     entities = [Donor::class],
-    version = 1,
+    version = 2,
     exportSchema = false
 )
 abstract class BloodConnectDatabase : RoomDatabase() {
@@ -26,7 +25,9 @@ abstract class BloodConnectDatabase : RoomDatabase() {
                     context.applicationContext,
                     BloodConnectDatabase::class.java,
                     "bloodconnect_database"
-                ).build()
+                )
+                    .fallbackToDestructiveMigration()
+                    .build()
 
                 INSTANCE = instance
                 instance
