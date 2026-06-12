@@ -40,6 +40,7 @@ import java.util.concurrent.TimeUnit
 @Composable
 fun DonorListScreen(
     donors: List<Donor>,
+    onEditDonorClick: (Donor) -> Unit,
     onBackClick: () -> Unit
 ) {
     val context = LocalContext.current
@@ -125,7 +126,7 @@ fun DonorListScreen(
         Spacer(modifier = Modifier.height(8.dp))
 
         Text(
-            text = "Search local donor records by name, area, blood group, and availability.",
+            text = "Search, contact, and update local donor records.",
             style = MaterialTheme.typography.bodyMedium
         )
 
@@ -313,24 +314,27 @@ fun DonorListScreen(
 
                             Row(
                                 modifier = Modifier.fillMaxWidth(),
-                                horizontalArrangement = Arrangement.spacedBy(12.dp)
+                                horizontalArrangement = Arrangement.spacedBy(8.dp)
                             ) {
                                 OutlinedButton(
-                                    onClick = {
-                                        openDialer(donor.phone)
-                                    },
+                                    onClick = { openDialer(donor.phone) },
                                     modifier = Modifier.weight(1f)
                                 ) {
                                     Text("Call")
                                 }
 
                                 OutlinedButton(
-                                    onClick = {
-                                        openSms(donor.phone, donor.name)
-                                    },
+                                    onClick = { openSms(donor.phone, donor.name) },
                                     modifier = Modifier.weight(1f)
                                 ) {
                                     Text("SMS")
+                                }
+
+                                OutlinedButton(
+                                    onClick = { onEditDonorClick(donor) },
+                                    modifier = Modifier.weight(1f)
+                                ) {
+                                    Text("Edit")
                                 }
                             }
                         }

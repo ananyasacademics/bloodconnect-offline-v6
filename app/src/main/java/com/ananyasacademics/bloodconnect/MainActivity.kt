@@ -19,6 +19,7 @@ import com.ananyasacademics.bloodconnect.ui.screens.AddDonorScreen
 import com.ananyasacademics.bloodconnect.ui.screens.CsvToolsScreen
 import com.ananyasacademics.bloodconnect.ui.screens.DashboardScreen
 import com.ananyasacademics.bloodconnect.ui.screens.DonorListScreen
+import com.ananyasacademics.bloodconnect.ui.screens.EditDonorScreen
 import com.ananyasacademics.bloodconnect.ui.screens.EmergencyScreen
 import com.ananyasacademics.bloodconnect.ui.screens.HomeScreen
 import com.ananyasacademics.bloodconnect.ui.screens.PrivacyScreen
@@ -49,6 +50,10 @@ class MainActivity : ComponentActivity() {
 
                     var currentScreen by remember {
                         mutableStateOf(Routes.HOME)
+                    }
+
+                    var selectedDonor by remember {
+                        mutableStateOf<Donor?>(null)
                     }
 
                     var addDonorMessage by remember {
@@ -150,10 +155,40 @@ class MainActivity : ComponentActivity() {
                         Routes.DONOR_LIST -> {
                             DonorListScreen(
                                 donors = donors,
+                                onEditDonorClick = { donor ->
+                                    selectedDonor = donor
+                                    currentScreen = Routes.EDIT_DONOR
+                                },
                                 onBackClick = {
                                     currentScreen = Routes.HOME
                                 }
                             )
+                        }
+
+                        Routes.EDIT_DONOR -> {
+                            val donorToEdit = selectedDonor
+
+                            if (donorToEdit == null) {
+                                currentScreen = Routes.DONOR_LIST
+                            } else {
+                                EditDonorScreen(
+                                    donor = donorToEdit,
+                                    onSaveClick = { updatedDonor ->
+                                        donorViewModel.updateDonor(updatedDonor)
+                                        selectedDonor = null
+                                        currentScreen = Routes.DONOR_LIST
+                                    },
+                                    onDeleteClick = { donorToDelete ->
+                                        donorViewModel.deleteDonor(donorToDelete)
+                                        selectedDonor = null
+                                        currentScreen = Routes.DONOR_LIST
+                                    },
+                                    onBackClick = {
+                                        selectedDonor = null
+                                        currentScreen = Routes.DONOR_LIST
+                                    }
+                                )
+                            }
                         }
 
                         Routes.EMERGENCY -> {
