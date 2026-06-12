@@ -7,12 +7,15 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Card
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 
 @Composable
@@ -22,35 +25,113 @@ fun PrivacyScreen(
     Column(
         modifier = Modifier
             .fillMaxSize()
+            .verticalScroll(rememberScrollState())
             .padding(24.dp),
         verticalArrangement = Arrangement.Top
     ) {
+
         Text(
             text = "Privacy & Responsible Use",
-            style = MaterialTheme.typography.headlineMedium
+            style = MaterialTheme.typography.headlineMedium,
+            fontWeight = FontWeight.Bold
         )
 
         Spacer(modifier = Modifier.height(8.dp))
 
         Text(
-            text = "BloodConnect Offline is a coordination tool, not a medical system.",
+            text = "BloodConnect Offline is an offline-first emergency coordination platform designed to support donor discovery and communication during emergencies and connectivity disruptions.",
             style = MaterialTheme.typography.bodyMedium
         )
 
-        Spacer(modifier = Modifier.height(24.dp))
+        Spacer(modifier = Modifier.height(20.dp))
 
         Card(
             modifier = Modifier.fillMaxWidth()
         ) {
             Column(
-                modifier = Modifier.padding(16.dp)
+                modifier = Modifier.padding(20.dp)
             ) {
+                Text(
+                    text = "Privacy Commitments",
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.Bold
+                )
+
+                Spacer(modifier = Modifier.height(10.dp))
+
                 Text("• Donor information is stored locally on this device.")
-                Text("• The app does not automatically upload donor data.")
-                Text("• Users are responsible for keeping donor details accurate.")
-                Text("• This app does not verify medical donor eligibility.")
-                Text("• This app is not a replacement for licensed medical providers.")
-                Text("• Use device passcode protection to help protect stored information.")
+                Text("• BloodConnect does not automatically upload donor records.")
+                Text("• No internet connection is required for core emergency functions.")
+                Text("• CSV export is controlled entirely by the user.")
+                Text("• Users remain responsible for protecting exported donor files.")
+            }
+        }
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        Card(
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Column(
+                modifier = Modifier.padding(20.dp)
+            ) {
+                Text(
+                    text = "Medical & Safety Disclaimer",
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.Bold
+                )
+
+                Spacer(modifier = Modifier.height(10.dp))
+
+                Text("• This application does not verify donor eligibility.")
+                Text("• This application does not replace licensed medical providers.")
+                Text("• Compatibility guidance is intended for coordination support only.")
+                Text("• Hospitals and qualified professionals should make final transfusion decisions.")
+                Text("• Users are responsible for maintaining accurate donor records.")
+            }
+        }
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        Card(
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Column(
+                modifier = Modifier.padding(20.dp)
+            ) {
+                Text(
+                    text = "Design Philosophy",
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.Bold
+                )
+
+                Spacer(modifier = Modifier.height(10.dp))
+
+                Text(
+                    text = "BloodConnect Offline was designed around resilience, privacy, and continuity. The platform prioritizes local access to donor information so communities can continue coordination efforts during disasters, emergencies, or connectivity failures."
+                )
+            }
+        }
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        Card(
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Column(
+                modifier = Modifier.padding(20.dp)
+            ) {
+                Text(
+                    text = "Application Information",
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.Bold
+                )
+
+                Spacer(modifier = Modifier.height(10.dp))
+
+                Text("BloodConnect Offline V6")
+                Text("Offline Emergency Coordination Platform")
+                Text("Local-first • Privacy-focused • Resilient by design")
             }
         }
 

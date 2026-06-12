@@ -2,6 +2,7 @@ package com.ananyasacademics.bloodconnect.ui.screens
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -11,6 +12,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
+import androidx.compose.material3.Card
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuBox
@@ -25,7 +27,9 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -64,16 +68,10 @@ fun AddDonorScreen(
     if (showMessageDialog && message.isNotBlank()) {
         AlertDialog(
             onDismissRequest = onDismissMessage,
-            title = {
-                Text("Donor Not Saved")
-            },
-            text = {
-                Text(message)
-            },
+            title = { Text("Donor Not Saved") },
+            text = { Text(message) },
             confirmButton = {
-                TextButton(
-                    onClick = onDismissMessage
-                ) {
+                TextButton(onClick = onDismissMessage) {
                     Text("OK")
                 }
             }
@@ -89,125 +87,196 @@ fun AddDonorScreen(
     ) {
         Text(
             text = "Add Donor",
-            style = MaterialTheme.typography.headlineMedium
+            style = MaterialTheme.typography.headlineMedium,
+            fontWeight = FontWeight.Bold
         )
 
         Spacer(modifier = Modifier.height(8.dp))
 
         Text(
-            text = "Add local donor details for offline emergency coordination. Data stays on this device.",
+            text = "Create a local donor record for offline emergency coordination.",
             style = MaterialTheme.typography.bodyMedium
         )
 
-        Spacer(modifier = Modifier.height(24.dp))
+        Spacer(modifier = Modifier.height(20.dp))
 
-        OutlinedTextField(
-            value = name,
-            onValueChange = {
-                name = it
-                errorMessage = ""
-            },
-            label = { Text("Donor Name") },
-            modifier = Modifier.fillMaxWidth(),
-            singleLine = true,
-            isError = errorMessage.contains("name", ignoreCase = true)
-        )
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        ExposedDropdownMenuBox(
-            expanded = bloodGroupExpanded,
-            onExpandedChange = { bloodGroupExpanded = !bloodGroupExpanded }
+        Card(
+            modifier = Modifier.fillMaxWidth()
         ) {
-            OutlinedTextField(
-                value = bloodGroup,
-                onValueChange = {},
-                readOnly = true,
-                label = { Text("Blood Group") },
-                trailingIcon = {
-                    ExposedDropdownMenuDefaults.TrailingIcon(expanded = bloodGroupExpanded)
-                },
-                modifier = Modifier
-                    .menuAnchor()
-                    .fillMaxWidth()
-            )
-
-            ExposedDropdownMenu(
-                expanded = bloodGroupExpanded,
-                onDismissRequest = { bloodGroupExpanded = false }
+            Column(
+                modifier = Modifier.padding(20.dp)
             ) {
-                bloodGroups.forEach { group ->
-                    DropdownMenuItem(
-                        text = { Text(group) },
-                        onClick = {
-                            bloodGroup = group
-                            bloodGroupExpanded = false
-                            errorMessage = ""
-                        }
+                Text(
+                    text = "Donor Identity",
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.Bold
+                )
+
+                Spacer(modifier = Modifier.height(12.dp))
+
+                OutlinedTextField(
+                    value = name,
+                    onValueChange = {
+                        name = it
+                        errorMessage = ""
+                    },
+                    label = { Text("Donor Name") },
+                    modifier = Modifier.fillMaxWidth(),
+                    singleLine = true,
+                    isError = errorMessage.contains("name", ignoreCase = true)
+                )
+
+                Spacer(modifier = Modifier.height(14.dp))
+
+                ExposedDropdownMenuBox(
+                    expanded = bloodGroupExpanded,
+                    onExpandedChange = { bloodGroupExpanded = !bloodGroupExpanded }
+                ) {
+                    OutlinedTextField(
+                        value = bloodGroup,
+                        onValueChange = {},
+                        readOnly = true,
+                        label = { Text("Blood Group") },
+                        trailingIcon = {
+                            ExposedDropdownMenuDefaults.TrailingIcon(expanded = bloodGroupExpanded)
+                        },
+                        modifier = Modifier
+                            .menuAnchor()
+                            .fillMaxWidth()
                     )
+
+                    ExposedDropdownMenu(
+                        expanded = bloodGroupExpanded,
+                        onDismissRequest = { bloodGroupExpanded = false }
+                    ) {
+                        bloodGroups.forEach { group ->
+                            DropdownMenuItem(
+                                text = { Text(group) },
+                                onClick = {
+                                    bloodGroup = group
+                                    bloodGroupExpanded = false
+                                    errorMessage = ""
+                                }
+                            )
+                        }
+                    }
                 }
             }
         }
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        OutlinedTextField(
-            value = phone,
-            onValueChange = {
-                phone = it
-                errorMessage = ""
-            },
-            label = { Text("Phone Number") },
-            modifier = Modifier.fillMaxWidth(),
-            singleLine = true,
-            isError = errorMessage.contains("phone", ignoreCase = true)
-        )
+        Card(
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Column(
+                modifier = Modifier.padding(20.dp)
+            ) {
+                Text(
+                    text = "Contact & Location",
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.Bold
+                )
+
+                Spacer(modifier = Modifier.height(12.dp))
+
+                OutlinedTextField(
+                    value = phone,
+                    onValueChange = {
+                        phone = it
+                        errorMessage = ""
+                    },
+                    label = { Text("Phone Number") },
+                    modifier = Modifier.fillMaxWidth(),
+                    singleLine = true,
+                    isError = errorMessage.contains("phone", ignoreCase = true)
+                )
+
+                Spacer(modifier = Modifier.height(14.dp))
+
+                OutlinedTextField(
+                    value = area,
+                    onValueChange = {
+                        area = it
+                        errorMessage = ""
+                    },
+                    label = { Text("Area / Location") },
+                    modifier = Modifier.fillMaxWidth(),
+                    singleLine = true,
+                    isError = errorMessage.contains("area", ignoreCase = true)
+                )
+            }
+        }
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        OutlinedTextField(
-            value = area,
-            onValueChange = {
-                area = it
-                errorMessage = ""
-            },
-            label = { Text("Area / Location") },
-            modifier = Modifier.fillMaxWidth(),
-            singleLine = true,
-            isError = errorMessage.contains("area", ignoreCase = true)
-        )
+        Card(
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Column(
+                modifier = Modifier.padding(20.dp)
+            ) {
+                Text(
+                    text = "Emergency Availability",
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.Bold
+                )
 
-        Spacer(modifier = Modifier.height(16.dp))
+                Spacer(modifier = Modifier.height(10.dp))
 
-        Text(
-            text = "Available to contact",
-            style = MaterialTheme.typography.bodyLarge
-        )
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    Column(
+                        modifier = Modifier.weight(1f)
+                    ) {
+                        Text(
+                            text = "Available to contact",
+                            style = MaterialTheme.typography.bodyLarge,
+                            fontWeight = FontWeight.Bold
+                        )
 
-        Switch(
-            checked = available,
-            onCheckedChange = { available = it }
-        )
+                        Text(
+                            text = if (available) {
+                                "This donor may be contacted during coordination."
+                            } else {
+                                "This donor will be stored but not shown as available."
+                            },
+                            style = MaterialTheme.typography.bodySmall
+                        )
+                    }
 
-        Spacer(modifier = Modifier.height(16.dp))
+                    Switch(
+                        checked = available,
+                        onCheckedChange = { available = it }
+                    )
+                }
 
-        OutlinedTextField(
-            value = notes,
-            onValueChange = {
-                notes = it
-                errorMessage = ""
-            },
-            label = { Text("Notes") },
-            modifier = Modifier.fillMaxWidth(),
-            minLines = 3
-        )
+                Spacer(modifier = Modifier.height(16.dp))
+
+                OutlinedTextField(
+                    value = notes,
+                    onValueChange = {
+                        notes = it
+                        errorMessage = ""
+                    },
+                    label = { Text("Notes") },
+                    modifier = Modifier.fillMaxWidth(),
+                    minLines = 3
+                )
+            }
+        }
 
         if (errorMessage.isNotBlank()) {
             Spacer(modifier = Modifier.height(12.dp))
+
             Text(
                 text = errorMessage,
                 color = MaterialTheme.colorScheme.error,
-                style = MaterialTheme.typography.bodyMedium
+                style = MaterialTheme.typography.bodyMedium,
+                fontWeight = FontWeight.Bold
             )
         }
 
@@ -221,33 +290,15 @@ fun AddDonorScreen(
                 val cleanNotes = notes.trim()
 
                 errorMessage = when {
-                    cleanName.isBlank() ->
-                        "Please enter the donor name."
-
-                    cleanName.length < 2 ->
-                        "Please enter a valid donor name."
-
-                    cleanName.length > 60 ->
-                        "Donor name is too long. Please keep it under 60 characters."
-
-                    bloodGroup !in bloodGroups ->
-                        "Please select a valid blood group."
-
-                    cleanPhone.isBlank() ->
-                        "Please enter a phone number."
-
-                    !isPhoneValid(cleanPhone) ->
-                        "Please enter a valid phone number with 7 to 15 digits."
-
-                    cleanArea.isBlank() ->
-                        "Please enter an area or location."
-
-                    cleanArea.length > 80 ->
-                        "Area is too long. Please keep it under 80 characters."
-
-                    cleanNotes.length > 300 ->
-                        "Notes are too long. Please keep notes under 300 characters."
-
+                    cleanName.isBlank() -> "Please enter the donor name."
+                    cleanName.length < 2 -> "Please enter a valid donor name."
+                    cleanName.length > 60 -> "Donor name is too long. Please keep it under 60 characters."
+                    bloodGroup !in bloodGroups -> "Please select a valid blood group."
+                    cleanPhone.isBlank() -> "Please enter a phone number."
+                    !isPhoneValid(cleanPhone) -> "Please enter a valid phone number with 7 to 15 digits."
+                    cleanArea.isBlank() -> "Please enter an area or location."
+                    cleanArea.length > 80 -> "Area is too long. Please keep it under 80 characters."
+                    cleanNotes.length > 300 -> "Notes are too long. Please keep notes under 300 characters."
                     else -> ""
                 }
 
