@@ -194,6 +194,9 @@ class MainActivity : ComponentActivity() {
                         Routes.EMERGENCY -> {
                             EmergencyScreen(
                                 donors = donors,
+                                onUpdateDonor = { updatedDonor ->
+                                    donorViewModel.updateDonor(updatedDonor)
+                                },
                                 onBackClick = {
                                     currentScreen = Routes.HOME
                                 }

@@ -31,11 +31,15 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.ananyasacademics.bloodconnect.data.model.Donor
 import com.ananyasacademics.bloodconnect.domain.compatibility.BloodCompatibilityEngine
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 import java.util.concurrent.TimeUnit
 
 @Composable
 fun EmergencyScreen(
     donors: List<Donor>,
+    onUpdateDonor: (Donor) -> Unit,
     onBackClick: () -> Unit
 ) {
     val context = LocalContext.current
@@ -55,6 +59,8 @@ fun EmergencyScreen(
         .sortedWith(
             compareBy<Donor> {
                 if (it.bloodGroup == requestedBloodGroup) 0 else 1
+            }.thenBy {
+                if (it.outreachStatus == "Reached") 1 else 0
             }.thenBy {
                 it.name
             }
@@ -78,19 +84,44 @@ fun EmergencyScreen(
         }
     }
 
-    fun openDialer(phone: String) {
+    fun formatContactTime(timestamp: Long): String {
+        if (timestamp <= 0L) return "No outreach recorded"
+
+        return try {
+            val formatter = SimpleDateFormat("MMM d, h:mm a", Locale.getDefault())
+            formatter.format(Date(timestamp))
+        } catch (e: Exception) {
+            "Unknown time"
+        }
+    }
+
+    fun updateOutreachStatus(donor: Donor, status: String) {
+        onUpdateDonor(
+            donor.copy(
+                outreachStatus = status,
+                lastContactTimestamp = System.currentTimeMillis(),
+                updatedTimestamp = System.currentTimeMillis()
+            )
+        )
+    }
+
+    fun openDialer(donor: Donor) {
+        updateOutreachStatus(donor, "Call Attempted")
+
         val intent = Intent(Intent.ACTION_DIAL).apply {
-            data = Uri.parse("tel:${phone.filter { it.isDigit() }}")
+            data = Uri.parse("tel:${donor.phone.filter { it.isDigit() }}")
         }
         context.startActivity(intent)
     }
 
-    fun openSms(phone: String, donorName: String, bloodGroup: String) {
+    fun openSms(donor: Donor) {
+        updateOutreachStatus(donor, "SMS Sent")
+
         val message =
-            "Hello $donorName, this is an emergency blood donor coordination message from BloodConnect Offline. A $requestedBloodGroup request is being coordinated. Please respond if you are available."
+            "Hello ${donor.name}, this is an emergency blood donor coordination message from BloodConnect Offline. A $requestedBloodGroup request is being coordinated. Please respond if you are available."
 
         val intent = Intent(Intent.ACTION_SENDTO).apply {
-            data = Uri.parse("smsto:${phone.filter { it.isDigit() }}")
+            data = Uri.parse("smsto:${donor.phone.filter { it.isDigit() }}")
             putExtra("sms_body", message)
         }
 
@@ -112,7 +143,7 @@ fun EmergencyScreen(
         Spacer(modifier = Modifier.height(6.dp))
 
         Text(
-            text = "Offline-compatible donor matching for urgent coordination.",
+            text = "Offline-compatible donor matching and outreach tracking for urgent coordination.",
             style = MaterialTheme.typography.bodyMedium
         )
 
@@ -140,9 +171,7 @@ fun EmergencyScreen(
                 Spacer(modifier = Modifier.height(8.dp))
 
                 OutlinedButton(
-                    onClick = {
-                        expanded = true
-                    },
+                    onClick = { expanded = true },
                     modifier = Modifier.fillMaxWidth()
                 ) {
                     Text(
@@ -154,15 +183,11 @@ fun EmergencyScreen(
 
                 DropdownMenu(
                     expanded = expanded,
-                    onDismissRequest = {
-                        expanded = false
-                    }
+                    onDismissRequest = { expanded = false }
                 ) {
                     bloodGroups.forEach { group ->
                         DropdownMenuItem(
-                            text = {
-                                Text(group)
-                            },
+                            text = { Text(group) },
                             onClick = {
                                 requestedBloodGroup = group
                                 expanded = false
@@ -175,9 +200,7 @@ fun EmergencyScreen(
                 Spacer(modifier = Modifier.height(14.dp))
 
                 Button(
-                    onClick = {
-                        hasSearched = true
-                    },
+                    onClick = { hasSearched = true },
                     modifier = Modifier.fillMaxWidth()
                 ) {
                     Text("Find Matching Donors")
@@ -201,31 +224,14 @@ fun EmergencyScreen(
 
                 Spacer(modifier = Modifier.height(8.dp))
 
-                Text(
-                    text = "Total records: ${donors.size}",
-                    style = MaterialTheme.typography.bodyMedium
-                )
-
-                Text(
-                    text = "Available donors: $availableDonors",
-                    style = MaterialTheme.typography.bodyMedium
-                )
+                Text("Total records: ${donors.size}")
+                Text("Available donors: $availableDonors")
 
                 if (hasSearched) {
-                    Text(
-                        text = "Exact matches: $exactMatches",
-                        style = MaterialTheme.typography.bodyMedium
-                    )
-
-                    Text(
-                        text = "Compatible backups: $compatibleMatches",
-                        style = MaterialTheme.typography.bodyMedium
-                    )
+                    Text("Exact matches: $exactMatches")
+                    Text("Compatible backups: $compatibleMatches")
                 } else {
-                    Text(
-                        text = "Select a blood group to calculate exact and compatible matches.",
-                        style = MaterialTheme.typography.bodyMedium
-                    )
+                    Text("Select a blood group to calculate exact and compatible matches.")
                 }
             }
         }
@@ -293,62 +299,82 @@ fun EmergencyScreen(
                                     style = MaterialTheme.typography.titleMedium
                                 )
 
-                                Text(
-                                    text = "Blood Group: ${donor.bloodGroup}",
-                                    style = MaterialTheme.typography.bodyMedium
-                                )
+                                Text("Blood Group: ${donor.bloodGroup}")
+                                Text("Phone: ${donor.phone}")
+                                Text("Area: ${donor.area}")
 
-                                Text(
-                                    text = "Phone: ${donor.phone}",
-                                    style = MaterialTheme.typography.bodyMedium
-                                )
-
-                                Text(
-                                    text = "Area: ${donor.area}",
-                                    style = MaterialTheme.typography.bodyMedium
-                                )
+                                Spacer(modifier = Modifier.height(6.dp))
 
                                 Text(
                                     text = "Reliability: ${reliabilityLabel(donor.updatedTimestamp)}",
                                     style = MaterialTheme.typography.bodySmall
                                 )
 
+                                Text(
+                                    text = "Outreach: ${donor.outreachStatus}",
+                                    style = MaterialTheme.typography.bodySmall,
+                                    fontWeight = FontWeight.Bold
+                                )
+
+                                Text(
+                                    text = "Last Contact: ${formatContactTime(donor.lastContactTimestamp)}",
+                                    style = MaterialTheme.typography.bodySmall
+                                )
+
                                 if (donor.notes.isNotBlank()) {
                                     Spacer(modifier = Modifier.height(4.dp))
-
-                                    Text(
-                                        text = "Notes: ${donor.notes}",
-                                        style = MaterialTheme.typography.bodyMedium
-                                    )
+                                    Text("Notes: ${donor.notes}")
                                 }
 
                                 Spacer(modifier = Modifier.height(12.dp))
 
                                 Row(
                                     modifier = Modifier.fillMaxWidth(),
-                                    horizontalArrangement = Arrangement.spacedBy(12.dp)
+                                    horizontalArrangement = Arrangement.spacedBy(8.dp)
                                 ) {
                                     OutlinedButton(
-                                        onClick = {
-                                            openDialer(donor.phone)
-                                        },
+                                        onClick = { openDialer(donor) },
                                         modifier = Modifier.weight(1f)
                                     ) {
                                         Text("Call")
                                     }
 
                                     OutlinedButton(
-                                        onClick = {
-                                            openSms(
-                                                phone = donor.phone,
-                                                donorName = donor.name,
-                                                bloodGroup = donor.bloodGroup
-                                            )
-                                        },
+                                        onClick = { openSms(donor) },
                                         modifier = Modifier.weight(1f)
                                     ) {
                                         Text("SMS")
                                     }
+                                }
+
+                                Spacer(modifier = Modifier.height(8.dp))
+
+                                Row(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                                ) {
+                                    OutlinedButton(
+                                        onClick = { updateOutreachStatus(donor, "Reached") },
+                                        modifier = Modifier.weight(1f)
+                                    ) {
+                                        Text("Reached")
+                                    }
+
+                                    OutlinedButton(
+                                        onClick = { updateOutreachStatus(donor, "Unavailable") },
+                                        modifier = Modifier.weight(1f)
+                                    ) {
+                                        Text("Unavailable")
+                                    }
+                                }
+
+                                Spacer(modifier = Modifier.height(8.dp))
+
+                                OutlinedButton(
+                                    onClick = { updateOutreachStatus(donor, "Not Contacted") },
+                                    modifier = Modifier.fillMaxWidth()
+                                ) {
+                                    Text("Reset Outreach Status")
                                 }
                             }
                         }
