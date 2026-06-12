@@ -83,36 +83,6 @@ fun CsvToolsScreen(
         return "BloodConnect_Donors_${formatter.format(Date())}.csv"
     }
 
-    val saveCsvLauncher = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.CreateDocument("text/csv")
-    ) { uri ->
-        if (uri == null) {
-            message = "CSV save was cancelled."
-            return@rememberLauncherForActivityResult
-        }
-
-        try {
-            context.contentResolver.openOutputStream(uri)?.use { outputStream ->
-                outputStream.write(pendingCsvText.toByteArray())
-            }
-
-            message = "CSV file saved successfully."
-            pendingCsvText = ""
-        } catch (e: Exception) {
-            message = "Unable to save CSV file. Please try Share CSV instead."
-        }
-    }
-
-    fun saveCsvFile() {
-        if (donors.isEmpty()) {
-            message = "No donor records available to save."
-            return
-        }
-
-        pendingCsvText = buildCsv()
-        saveCsvLauncher.launch(buildFileName())
-    }
-
     fun parseCsvLine(line: String): List<String> {
         val result = mutableListOf<String>()
         val current = StringBuilder()
@@ -143,26 +113,11 @@ fun CsvToolsScreen(
         return result
     }
 
-    fun shareCsv() {
-        if (donors.isEmpty()) {
-            message = "No donor records available to export."
-            return
-        }
-
-        val sendIntent = Intent(Intent.ACTION_SEND).apply {
-            type = "text/csv"
-            putExtra(Intent.EXTRA_SUBJECT, "BloodConnect Offline Donor Export")
-            putExtra(Intent.EXTRA_TEXT, buildCsv())
-        }
-
-        context.startActivity(Intent.createChooser(sendIntent, "Share donor CSV"))
-    }
-
-    fun importCsv() {
-        val lines = csvInput.lines().map { it.trim() }.filter { it.isNotBlank() }
+    fun processCsvImport(csvText: String) {
+        val lines = csvText.lines().map { it.trim() }.filter { it.isNotBlank() }
 
         if (lines.size < 2) {
-            message = "Please paste CSV data with a header row and at least one donor row."
+            message = "Please provide CSV data with a header row and at least one donor row."
             return
         }
 
@@ -240,6 +195,90 @@ fun CsvToolsScreen(
         csvInput = ""
     }
 
+    val saveCsvLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.CreateDocument("text/csv")
+    ) { uri ->
+        if (uri == null) {
+            message = "CSV save was cancelled."
+            return@rememberLauncherForActivityResult
+        }
+
+        try {
+            context.contentResolver.openOutputStream(uri)?.use { outputStream ->
+                outputStream.write(pendingCsvText.toByteArray())
+            }
+
+            message = "CSV file saved successfully."
+            pendingCsvText = ""
+        } catch (e: Exception) {
+            message = "Unable to save CSV file. Please try Share CSV instead."
+        }
+    }
+
+    val importCsvFileLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.OpenDocument()
+    ) { uri ->
+        if (uri == null) {
+            message = "CSV file import was cancelled."
+            return@rememberLauncherForActivityResult
+        }
+
+        try {
+            val csvText = context.contentResolver.openInputStream(uri)?.bufferedReader()?.use {
+                it.readText()
+            }.orEmpty()
+
+            if (csvText.isBlank()) {
+                message = "The selected CSV file is empty or could not be read."
+            } else {
+                processCsvImport(csvText)
+            }
+        } catch (e: Exception) {
+            message = "Unable to read selected CSV file. Please try paste import instead."
+        }
+    }
+
+    fun saveCsvFile() {
+        if (donors.isEmpty()) {
+            message = "No donor records available to save."
+            return
+        }
+
+        pendingCsvText = buildCsv()
+        saveCsvLauncher.launch(buildFileName())
+    }
+
+    fun shareCsv() {
+        if (donors.isEmpty()) {
+            message = "No donor records available to export."
+            return
+        }
+
+        val sendIntent = Intent(Intent.ACTION_SEND).apply {
+            type = "text/csv"
+            putExtra(Intent.EXTRA_SUBJECT, "BloodConnect Offline Donor Export")
+            putExtra(Intent.EXTRA_TEXT, buildCsv())
+        }
+
+        context.startActivity(Intent.createChooser(sendIntent, "Share donor CSV"))
+    }
+
+    fun importCsvFromPaste() {
+        processCsvImport(csvInput)
+    }
+
+    fun importCsvFromFile() {
+        importCsvFileLauncher.launch(
+            arrayOf(
+                "text/csv",
+                "text/comma-separated-values",
+                "text/plain",
+                "application/vnd.ms-excel",
+                "*/*"
+            )
+        )
+    }
+
     if (message.isNotBlank()) {
         AlertDialog(
             onDismissRequest = { message = "" },
@@ -313,14 +352,41 @@ fun CsvToolsScreen(
         Card(modifier = Modifier.fillMaxWidth()) {
             Column(modifier = Modifier.padding(20.dp)) {
                 Text(
-                    text = "CSV Import",
+                    text = "CSV File Import",
                     style = MaterialTheme.typography.titleMedium
                 )
 
                 Spacer(modifier = Modifier.height(8.dp))
 
                 Text(
-                    text = "Paste CSV text below. The import checks required fields, blood groups, phone length, duplicates, and invalid rows.",
+                    text = "Select a saved CSV file from this device. The app validates rows, skips duplicates, and imports valid donor records.",
+                    style = MaterialTheme.typography.bodyMedium
+                )
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                Button(
+                    onClick = { importCsvFromFile() },
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Text("Import CSV File")
+                }
+            }
+        }
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        Card(modifier = Modifier.fillMaxWidth()) {
+            Column(modifier = Modifier.padding(20.dp)) {
+                Text(
+                    text = "Paste CSV Import",
+                    style = MaterialTheme.typography.titleMedium
+                )
+
+                Spacer(modifier = Modifier.height(8.dp))
+
+                Text(
+                    text = "Paste CSV text below as a backup method. The same validation and duplicate checks are applied.",
                     style = MaterialTheme.typography.bodyMedium
                 )
 
@@ -337,10 +403,10 @@ fun CsvToolsScreen(
                 Spacer(modifier = Modifier.height(16.dp))
 
                 Button(
-                    onClick = { importCsv() },
+                    onClick = { importCsvFromPaste() },
                     modifier = Modifier.fillMaxWidth()
                 ) {
-                    Text("Import Donors CSV")
+                    Text("Import Pasted CSV")
                 }
             }
         }
